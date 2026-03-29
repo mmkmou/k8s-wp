@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    run: pma
+  name: pma
+  namespace: wordpress-ns
+spec:
+  containers:
+  - image: phpmyadmin
+    name: pma
+    ports:
+    - containerPort: 80
+      name: pma
+    envFrom:
+    - configMapRef:
+        name: wordpress-config
+    - secretRef:
+        name: wordpress-secret

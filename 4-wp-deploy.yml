@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: wp-deploy
+  name: wp-deploy
+  namespace: wordpress-ns
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: wp-deploy
+  template:
+    metadata:
+      labels:
+        app: wp-deploy
+    spec:
+      containers:
+      - image: wordpress
+        name: wordpress
+        volumeMounts:
+        - name: wordpress-pvc
+          mountPath: /var/www/html
+        ports:
+        - containerPort: 80
+          name: wordpress
+        envFrom:
+        - configMapRef: 
+            name: wordpress-config
+        - secretRef:
+            name: wordpress-secret
+        
+      volumes:
+      - name: wordpress-pvc
+        persistentVolumeClaim:
+          claimName: pvc-wordpress  

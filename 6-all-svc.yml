@@ -1,0 +1,53 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: wp-deploy
+  name: wp-deploy
+  namespace: wordpress-ns
+spec:
+  type: NodePort
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 80
+    nodePort: 30010
+  selector:
+    app: wp-deploy
+
+--- 
+
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: mysql
+  name: mysql-svc
+  namespace: wordpress-ns
+spec:
+  type: ClusterIP
+  ports:
+  - port: 3306
+    protocol: TCP
+    targetPort: 3306
+  selector:
+    app: mysql-db
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: pma-svc
+  name: pma-svc
+  namespace: wordpress-ns
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 80
+    nodePort: 30020
+  selector:
+    run: pma
