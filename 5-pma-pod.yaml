@@ -12,8 +12,19 @@ spec:
     ports:
     - containerPort: 80
       name: pma
-    envFrom:
-    - configMapRef:
-        name: wordpress-config
-    - secretRef:
-        name: wordpress-secret
+    env:
+    - name: PMA_HOST
+      valueFrom:
+        configMapKeyRef:
+          name: wordpress-config
+          key: PMA_HOST
+    - name: PMA_PORT
+      valueFrom:
+        configMapKeyRef:
+          name: wordpress-config
+          key: PMA_PORT
+    - name: MYSQL_ROOT_PASSWORD
+      valueFrom:
+        secretKeyRef:
+          name: wordpress-secret
+          key: MYSQL_ROOT_PASSWORD

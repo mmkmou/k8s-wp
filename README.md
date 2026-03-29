@@ -84,6 +84,26 @@ minikube service pma-svc -n wordpress-ns --url
 | WordPress | NodePort | 30010 |
 | phpMyAdmin | LoadBalancer | 30020 |
 
+## Choix `env` vs `envFrom` pour phpMyAdmin
+
+Le pod phpMyAdmin utilise `env` avec des références ciblées (`valueFrom`) plutôt que `envFrom`.
+
+**Pourquoi ?**
+
+`envFrom` injecte **toutes** les variables d'un ConfigMap ou d'un Secret dans le conteneur. Pour phpMyAdmin, cela signifierait injecter des variables inutiles comme `MYSQL_DATABASE`, `MYSQL_USER`, `WORDPRESS_DB_HOST`, etc. qui ne le concernent pas.
+
+Avec `env` + `valueFrom`, on injecte **uniquement** les variables nécessaires :
+- `PMA_HOST` — adresse du serveur MySQL
+- `PMA_PORT` — port MySQL
+- `MYSQL_ROOT_PASSWORD` — mot de passe root pour la connexion
+
+C'est une bonne pratique : **principe du moindre privilège** appliqué à la configuration.
+
+| Approche | Variables injectées | Recommandée pour |
+|---------|-------------------|-----------------|
+| `envFrom` | Toutes (ConfigMap ou Secret entier) | Quand toutes les variables sont pertinentes |
+| `env` + `valueFrom` | Seulement celles déclarées | Quand on veut cibler des variables précises |
+
 ## Vérification
 
 ```bash
